@@ -8,7 +8,9 @@ COPY build.gradle settings.gradle ./
 RUN chmod +x gradlew && ./gradlew dependencies --no-daemon || true
 
 COPY . .
-RUN ./gradlew clean build -x test --no-daemon
+
+# ✅ COPY 이후 권한이 덮일 수 있어서 한 번 더 보강
+RUN chmod +x gradlew && ./gradlew clean build -x test --no-daemon
 
 # 2) Runtime stage (JRE 21)
 FROM eclipse-temurin:21-jre-alpine
