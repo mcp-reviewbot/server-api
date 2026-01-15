@@ -39,26 +39,25 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          set -e
-          APP_NAME="review_server"
-          IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:latest"
-          PORT="80"
-          ENV_FILE="/opt/myapp/.env"
-                  
-          docker pull "$IMAGE"
-          
-          if docker ps -a --format '{{.Names}}' | grep -q "^${APP_NAME}\$"; then
-            docker stop "$APP_NAME" || true
-            docker rm "$APP_NAME" || true
-          fi
-          
-          if [ -f "$ENV_FILE" ]; then
-            docker run -d --name "$APP_NAME" -p "${PORT}:8080" --restart always --env-file "$ENV_FILE" "$IMAGE"
-          else
-            docker run -d --name "$APP_NAME" -p "${PORT}:8080" --restart always "$IMAGE"
-          fi
-          
-          docker logs --tail=50 "$APP_NAME" || true
-          docker image prune -f --filter "until=168h" || true
+          script: |
+            set -e
+            APP_NAME="review_server"
+            IMAGE="${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:latest"
+            PORT="80"
+            ENV_FILE="/opt/myapp/.env"
 
+            docker pull "$IMAGE"
+
+            if docker ps -a --format '{{.Names}}' | grep -q "^${APP_NAME}\$"; then
+              docker stop "$APP_NAME" || true
+              docker rm "$APP_NAME" || true
+            fi
+
+            if [ -f "$ENV_FILE" ]; then
+              docker run -d --name "$APP_NAME" -p "${PORT}:8080" --restart always --env-file "$ENV_FILE" "$IMAGE"
+            else
+              docker run -d --name "$APP_NAME" -p "${PORT}:8080" --restart always "$IMAGE"
+            fi
+
+            docker logs --tail=50 "$APP_NAME" || true
+            docker image prune -f --filter "until=168h" || true
