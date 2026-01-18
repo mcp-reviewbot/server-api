@@ -1,18 +1,17 @@
-# 1) Build stage (JDK 21)
+#build
 FROM eclipse-temurin:21-jdk AS builder
 WORKDIR /app
 
-COPY gradlew .
-COPY gradle gradle
-COPY build.gradle settings.gradle ./
+COPY ../gradlew .
+COPY ../gradle gradle
+COPY ../build.gradle settings.gradle ./
 RUN chmod +x gradlew && ./gradlew dependencies --no-daemon || true
 
-COPY . .
+COPY .. .
 
-# ✅ COPY 이후 권한이 덮일 수 있어서 한 번 더 보강
 RUN chmod +x gradlew && ./gradlew clean build -x test --no-daemon
 
-# 2) Runtime stage (JRE 21)
+#run
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
