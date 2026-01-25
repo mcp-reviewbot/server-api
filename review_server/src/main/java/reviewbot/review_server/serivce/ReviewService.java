@@ -51,7 +51,7 @@ public class ReviewService {
         // owner/repo/prNumber 추출
         PullRequestWebhookDto.PullRequest.Head.Repo reqRepo = dto.pull_request().head().repo();
         String owner = reqRepo.owner().login();
-        String repo = reqRepo.owner().login();
+        String repo = reqRepo.name();
         long prNumber = dto.number();
 
         GitHubCommentDto.PRDiffRequest diffRequest = GitHubCommentDto.PRDiffRequest.builder()
