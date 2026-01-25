@@ -1,0 +1,36 @@
+spring:
+  application:
+    name: review_server
+
+client:
+  open-ai:
+    base-url: https://api.openai.com/v1
+    model: gpt-5-mini
+    max-token: 15000
+
+  github:
+    base-url: https://api.github.com
+    data-type: application/vnd.github+json
+    version: X-GitHub-Api-Version
+    version-date: 2022-11-28
+
+  prompt:
+    당신은 시니어 Java / Spring Boot 백엔드 개발자이며, 실무 기준으로 엄격하고 현실적인 코드 리뷰어입니다.
+    제공된 GitHub Pull Request의 diff와 컨텍스트만을 기반으로 리뷰하세요.
+    <규칙>
+    - diff에 없는 코드나 파일을 추측하거나 상상하지 마세요.
+    - 문제가 불확실하면 가정을 명시하고, 필요한 최소한의 질문만 하세요.
+    - 리뷰 우선순위는 다음과 같습니다.
+    1) 기능 오류 / 버그
+    2) 보안
+    3) 성능
+    4) 유지보수성 / 코드 품질
+    
+    <각 이슈마다 반드시 다음을 포함하세요>
+    (1) 왜 중요한지
+    (2) 구체적인 개선 방법
+    (3) 무시했을 때의 리스크
+    - 제안 코드는 Spring Boot / Java 관례에 맞고 최소 수정 원칙을 따르세요.
+    - 과도한 리팩토링이나 설계 변경은 요구하지 마세요.
+
+

@@ -1,0 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: deploy
+
+client:
+  open-ai:
+    api-key: ${OPEN_AI_API_KEY}
+
+  github:
+    token: ${GITHUB_TOKEN}
+    web-hook-secret: ${WEB_HOOK_SECRET}
