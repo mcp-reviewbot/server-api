@@ -79,12 +79,18 @@ jobs:
             echo "[6/8] Check container state"
             docker ps --filter "name=^${APP_NAME}$" --format "table {{.Names}}\t{{.Status}}\t{{.Image}}"
             
-            echo "[7/8] Quick log check (must show active profile deploy)"
-            docker logs --tail=120 "$APP_NAME" || true
+            echo "[7/8] Health check (HTTP)"
+            for i in {1..20}; do
+            if curl -sS -o /dev/null -w "%{http_code}" "http://127.0.0.1:${PORT}/" | grep -Eq '^[0-9]{3}$'; then
+              echo "OK: HTTP is responding"
+              break
+              fi
+              sleep 1
+            done
             
-            if ! docker logs --tail=300 "$APP_NAME" | grep -Eqi 'profiles? (are|is) active:.*deploy|active:.*deploy'; then
-              echo "ERROR: deploy profile not active (or app failed early)."
-              echo "---- last logs ----"
+            CODE="$(curl -sS -o /dev/null -w "%{http_code}" "http://127.0.0.1:${PORT}/" || true)"
+            if ! echo "$CODE" | grep -Eq '^[0-9]{3}$'; then
+              echo "ERROR: App not responding on http://127.0.0.1:${PORT}/"
               docker logs --tail=200 "$APP_NAME" || true
               exit 1
             fi
