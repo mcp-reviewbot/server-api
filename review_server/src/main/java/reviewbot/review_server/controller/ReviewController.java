@@ -11,7 +11,7 @@ import reviewbot.review_server.usecase.ReviewUseCase;
 public class ReviewController {
     private final ReviewUseCase reviewUseCase;
 
-    @GetMapping("/webhook")
+    @PostMapping("/webhook")
     public ResponseEntity<Void> githubWebhook(
             @RequestHeader("X-GitHub-Event") String event,
             @RequestHeader("X-GitHub-Delivery") String deliveryId,
