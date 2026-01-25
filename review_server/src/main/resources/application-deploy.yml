@@ -1,7 +1,12 @@
+spring:
+  config:
+    activate:
+      on-profile: deploy
+
 client:
   open-ai:
-    api-key: ${{ secrets.OPEN_AI_API_KEY }}
+    api-key: ${OPEN_AI_API_KEY}
 
   github:
-    token: ${{ secrets.REPO_TOKEN }}
-    web-hook-secret: ${{ secrets.WEB_HOOK_SECRET }}
+    token: ${GITHUB_TOKEN}
+    web-hook-secret: ${WEB_HOOK_SECRET}

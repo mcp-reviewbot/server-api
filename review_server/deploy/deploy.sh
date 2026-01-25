@@ -16,11 +16,16 @@ if docker ps -a --format '{{.Names}}' | grep -q "^${APP_NAME}\$"; then
 fi
 
 # 컨테이너 실행
+ENV_FILE="/opt/myapp/.env"
+
 docker run -d \
   --name "$APP_NAME" \
   -p "${PORT}:8080" \
   --restart always \
+  --env-file "$ENV_FILE" \
+  -e SPRING_PROFILES_ACTIVE=deploy \
   "$IMAGE"
+
 
 sleep 2
 
