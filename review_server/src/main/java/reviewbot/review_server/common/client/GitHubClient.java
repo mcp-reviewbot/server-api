@@ -18,13 +18,18 @@ public class GitHubClient {
      * 기본 댓글달기 (review -> comment)
      */
     public void comment(GitHubCommentDto.IssueCommentRequest req) {
-        gitHubApiClient.post()
-                .uri("/repos/{owner}/{repo}/issues/{issue_number}/comments",
-                        req.getOwner(), req.getRepo(), req.getIssueNumber())
-                .bodyValue(Map.of("body", req.getBody()))
-                .retrieve()
-                .toBodilessEntity()
-                .block();
+        try {
+            gitHubApiClient.post()
+                    .uri("/repos/{owner}/{repo}/issues/{issue_number}/comments",
+                            req.getOwner(), req.getRepo(), req.getIssueNumber())
+                    .bodyValue(Map.of("body", req.getBody()))
+                    .retrieve()
+                    .toBodilessEntity()
+                    .block();
+        } catch (Exception e) {
+            log.error("PR 코멘트 요청 중 에러 발생 : {}", e.getMessage());
+            throw e;
+        }
     }
 
 
@@ -33,16 +38,17 @@ public class GitHubClient {
      */
     public String
     getPullRequestDiff(GitHubCommentDto.PRDiffRequest req) {
-        log.info("owner : {}", req.getOwner());
-        log.info("repo : {}", req.getRepo());
-        log.info("prNumber : {} ", req.getPrNumber());
-
-        return gitHubApiClient.get()
-                .uri("/repos/{owner}/{repo}/pulls/{pull_number}", req.getOwner(), req.getRepo(), req.getPrNumber())
-                .header("Accept", "application/vnd.github.v3.diff")
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+        try {
+            return gitHubApiClient.get()
+                    .uri("/repos/{owner}/{repo}/pulls/{pull_number}", req.getOwner(), req.getRepo(), req.getPrNumber())
+                    .header("Accept", "application/vnd.github.v3.diff")
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+        } catch (Exception e) {
+            log.error("PR 정보 가져오기 중 에러 발생 : {}", e.getMessage());
+            throw e;
+        }
     }
 
 }
