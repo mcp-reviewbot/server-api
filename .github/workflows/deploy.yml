@@ -82,7 +82,7 @@ jobs:
             echo "[7/8] Quick log check (must show active profile deploy)"
             docker logs --tail=120 "$APP_NAME" || true
             
-            if ! docker logs --tail=200 "$APP_NAME" | grep -qi "profiles.*deploy"; then
+            if ! docker logs --tail=300 "$APP_NAME" | grep -Eqi 'profiles? (are|is) active:.*deploy|active:.*deploy'; then
               echo "ERROR: deploy profile not active (or app failed early)."
               echo "---- last logs ----"
               docker logs --tail=200 "$APP_NAME" || true
