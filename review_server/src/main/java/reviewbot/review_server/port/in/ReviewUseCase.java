@@ -1,4 +1,4 @@
-package reviewbot.review_server.usecase;
+package reviewbot.review_server.port.in;
 
 /**
  * gitHub webHook 처리

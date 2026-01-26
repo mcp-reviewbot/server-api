@@ -13,6 +13,9 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
+/**
+ * 추후 Filter 혹은 Interceptor 레이어로 로직 이동 예정
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor

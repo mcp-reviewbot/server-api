@@ -6,10 +6,14 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Setter
 @Getter
-@ConfigurationProperties(prefix = "client")
-public class LlmProperties {
+@ConfigurationProperties(prefix = "client.prompt")
+public class PromptProperties {
     /**
-     * 공용 프롬프트
+     * 질의에 사용되는 프롬프트
      */
-    private String prompt;
+    private String common;
+
+    private String review;
+
+    private String describe;
 }

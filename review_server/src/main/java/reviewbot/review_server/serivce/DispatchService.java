@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Service
 @RequiredArgsConstructor
 public class DispatchService {
-    private final ReviewService reviewService;
+    private final GithubService githubService;
     private final Set<String> processed = ConcurrentHashMap.newKeySet();
 
     /**
@@ -25,7 +25,7 @@ public class DispatchService {
     @Async
     public void dispatchPullRequest(String deliveryId, byte[] rawBody) {
         try {
-            reviewService.reviewPullRequest(rawBody);
+            githubService.reviewPullRequest(rawBody);
             log.info("[{}] 성공적으로 처리되었습니다.", deliveryId);
         } catch (Exception e) {
             log.error("[{}] 처리 중 오류가 발생하였습니다.", deliveryId);
