@@ -9,8 +9,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
-import reviewbot.review_server.common.client.properties.LlmProperties;
+import reviewbot.review_server.common.client.properties.PromptProperties;
 import reviewbot.review_server.common.client.properties.OpenAIProperties;
+import reviewbot.review_server.dto.ReviewType;
 
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class OpenAiApiClient {
     private final OpenAIClient openAIClient;
     private final OpenAIProperties openAIProps;
-    private final LlmProperties llmProps;
+    private final PromptProperties promptProps;
 
     /**
      * ai 서버에 질의 날리기
@@ -32,7 +33,7 @@ public class OpenAiApiClient {
         ResponseCreateParams.Builder params = ResponseCreateParams.builder()
                 .input(input)
                 .model(openAIProps.getModel())
-                .instructions(llmProps.getPrompt())
+                .instructions(promptProps.getCommon())
                 .maxOutputTokens(openAIProps.getMaxToken());
 
         Response response = openAIClient.responses().create(params.build());
@@ -40,6 +41,23 @@ public class OpenAiApiClient {
         return extractOutputText(response)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Open AI 응답값 분리 도중 오류가 발생하였습니다."));
     }
+
+    public String ask(String input, ReviewType reviewType) {
+        String prompt = promptProps.getCommon();
+        prompt += reviewType == ReviewType.REVIEW ? promptProps.getReview() : promptProps.getDescribe();
+
+        ResponseCreateParams.Builder params = ResponseCreateParams.builder()
+                .input(input)
+                .model(openAIProps.getModel())
+                .instructions(prompt)
+                .maxOutputTokens(openAIProps.getMaxToken());
+
+        Response response = openAIClient.responses().create(params.build());
+
+        return extractOutputText(response)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Open AI 응답값 분리 도중 오류가 발생하였습니다."));
+    }
+
 
     /**
      * LLM 호출 값 중 최종 텍스트(응답 값)만 추출

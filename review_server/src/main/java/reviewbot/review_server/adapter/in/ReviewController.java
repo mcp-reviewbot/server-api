@@ -1,9 +1,9 @@
-package reviewbot.review_server.controller;
+package reviewbot.review_server.adapter.in;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import reviewbot.review_server.usecase.ReviewUseCase;
+import reviewbot.review_server.port.in.ReviewUseCase;
 
 @RestController
 @RequestMapping("/v1/review")
