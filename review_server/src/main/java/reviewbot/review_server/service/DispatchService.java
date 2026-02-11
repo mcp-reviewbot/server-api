@@ -1,6 +1,9 @@
 package reviewbot.review_server.service;
 
 import jakarta.annotation.PostConstruct;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -9,12 +12,8 @@ import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
-
-@Slf4j
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class DispatchService {
     private static final int QUEUE_CAPACITY = 256;

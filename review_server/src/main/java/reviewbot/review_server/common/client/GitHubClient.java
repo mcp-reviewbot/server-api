@@ -1,5 +1,6 @@
 package reviewbot.review_server.common.client;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -7,11 +8,9 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import reviewbot.review_server.dto.GitHubCommentDto;
 
-import java.util.Map;
-
 @Component
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class GitHubClient {
     private final WebClient gitHubApiClient;
 
@@ -28,7 +27,6 @@ public class GitHubClient {
                 .then()
                 .doOnError(e -> log.error("PR 코멘트 요청 중 에러 발생 : {}", e.getMessage()));
     }
-
 
     /**
      * PR 정보 가져오기
