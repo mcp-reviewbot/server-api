@@ -4,19 +4,18 @@ import com.openai.client.OpenAIClient;
 import com.openai.models.responses.Response;
 import com.openai.models.responses.ResponseCreateParams;
 import com.openai.models.responses.ResponseOutputText;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ResponseStatusException;
-import reviewbot.review_server.common.client.properties.PromptProperties;
-import reviewbot.review_server.common.client.properties.OpenAIProperties;
-import reviewbot.review_server.dto.ReviewType;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
-
-import java.util.Optional;
-import java.util.stream.Collectors;
+import reviewbot.review_server.common.client.properties.OpenAIProperties;
+import reviewbot.review_server.common.client.properties.PromptProperties;
+import reviewbot.review_server.dto.ReviewType;
 
 @Component
 @RequiredArgsConstructor
@@ -66,7 +65,6 @@ public class OpenAiApiClient {
                 .subscribeOn(Schedulers.boundedElastic());
     }
 
-
     /**
      * LLM 호출 값 중 최종 텍스트(응답 값)만 추출
      */
@@ -78,7 +76,9 @@ public class OpenAiApiClient {
                 .map(ResponseOutputText::text)
                 .collect(Collectors.joining());
 
-        if (!StringUtils.hasText(text)) return Optional.empty();
+        if (!StringUtils.hasText(text)) {
+            return Optional.empty();
+        }
         return Optional.of(text);
     }
 }

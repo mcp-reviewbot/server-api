@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Setter
-@Getter
 @ConfigurationProperties(prefix = "client.prompt")
+@Getter
+@Setter
 public class PromptProperties {
     /**
      * 질의에 사용되는 프롬프트

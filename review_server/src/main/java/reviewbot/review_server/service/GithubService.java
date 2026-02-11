@@ -4,13 +4,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 import reviewbot.review_server.common.client.GitHubClient;
 import reviewbot.review_server.common.client.OpenAiApiClient;
 import reviewbot.review_server.dto.GitHubCommentDto;
 import reviewbot.review_server.dto.PullRequestWebhookDto;
 import reviewbot.review_server.dto.ReviewType;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 import tools.jackson.databind.ObjectMapper;
 
 @Service
@@ -51,7 +51,9 @@ public class GithubService {
             return Mono.empty();
         }
 
-        if (dto.label() == null || !StringUtils.hasText(dto.label().name()) || !REVIEW_TARGET_LABEL.equals(dto.label().name())) {
+        if (dto.label() == null
+                || !StringUtils.hasText(dto.label().name())
+                || !REVIEW_TARGET_LABEL.equals(dto.label().name())) {
             log.info("타겟 라벨이 아닙니다. 실행을 종료합니다.");
             return Mono.empty();
         }
@@ -61,7 +63,10 @@ public class GithubService {
         String owner = reqRepo.owner().login();
         String repo = reqRepo.name();
         long prNumber = dto.number();
-        ReviewContext context = new ReviewContext(owner, repo, prNumber, dto.pull_request().title(), dto.pull_request().body());
+        ReviewContext context = new ReviewContext(
+                owner, repo, prNumber,
+                dto.pull_request().title(),
+                dto.pull_request().body());
 
         GitHubCommentDto.PRDiffRequest diffRequest = GitHubCommentDto.PRDiffRequest.builder()
                 .owner(owner)
@@ -71,21 +76,38 @@ public class GithubService {
 
         return gitHubClient.getPullRequestDiff(diffRequest)
                 .flatMap(diff -> {
-                    String describeInput = REVIEW_FORMAT.formatted(ReviewType.DESCRIBE, context.title(), context.explain(), diff);
-                    Mono<String> describeAskResult = openAiApiClient.ask(describeInput, ReviewType.DESCRIBE);
+                    String describeInput = REVIEW_FORMAT.formatted(
+                            ReviewType.DESCRIBE, context.title(),
+                            context.explain(), diff);
+                    Mono<String> describeAskResult =
+                            openAiApiClient.ask(describeInput, ReviewType.DESCRIBE);
 
-                    String reviewInput = REVIEW_FORMAT.formatted(ReviewType.REVIEW, context.title(), context.explain(), diff);
-                    Mono<String> reviewAskResult = openAiApiClient.ask(reviewInput, ReviewType.REVIEW);
+                    String reviewInput = REVIEW_FORMAT.formatted(
+                            ReviewType.REVIEW, context.title(),
+                            context.explain(), diff);
+                    Mono<String> reviewAskResult =
+                            openAiApiClient.ask(reviewInput, ReviewType.REVIEW);
 
                     return Mono.zip(describeAskResult, reviewAskResult)
-                            .flatMap(results -> postComment(context.owner(), context.repo(), context.prNumber(), results.getT1())
-                                    .then(postComment(context.owner(), context.repo(), context.prNumber(), results.getT2())));
+                            .flatMap(results -> postComment(
+                                    context.owner(), context.repo(),
+                                    context.prNumber(), results.getT1())
+                                    .then(postComment(
+                                            context.owner(), context.repo(),
+                                            context.prNumber(),
+                                            results.getT2())));
                 })
                 .onErrorResume(error -> {
-                    log.error("[{}/{}/{}] 리뷰 처리 실패: {}", context.owner(), context.repo(), context.prNumber(), error.getMessage());
+                    log.error("[{}/{}/{}] 리뷰 처리 실패: {}",
+                            context.owner(), context.repo(),
+                            context.prNumber(), error.getMessage());
                     return postFailureComment(context)
                             .onErrorResume(inner -> {
-                                log.error("[{}/{}/{}] 실패 코멘트 등록 실패: {}", context.owner(), context.repo(), context.prNumber(), inner.getMessage());
+                                log.error(
+                                        "[{}/{}/{}] 실패 코멘트 등록 실패: {}",
+                                        context.owner(), context.repo(),
+                                        context.prNumber(),
+                                        inner.getMessage());
                                 return Mono.empty();
                             });
                 });

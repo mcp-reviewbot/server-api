@@ -3,15 +3,14 @@ package reviewbot.review_server.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import reviewbot.review_server.port.in.ReviewUseCase;
 import reactor.core.publisher.Mono;
-
+import reviewbot.review_server.port.in.ReviewUseCase;
 
 /**
  * WebHook 구현 클래스 (github)
  */
-@Slf4j
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ReviewService implements ReviewUseCase {
     private final VerifyService verifyService;
@@ -35,6 +34,4 @@ public class ReviewService implements ReviewUseCase {
                     return dispatchService.dispatchPullRequest(deliveryId, rawBody);
                 }));
     }
-
-
 }
