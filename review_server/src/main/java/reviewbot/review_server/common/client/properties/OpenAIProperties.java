@@ -4,9 +4,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
-@Setter
-@Getter
 @ConfigurationProperties(prefix = "client.open-ai")
+@Getter
+@Setter
 public class OpenAIProperties {
     /**
      * open AI 연결설정
