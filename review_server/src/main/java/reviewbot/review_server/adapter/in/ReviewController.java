@@ -2,7 +2,12 @@ package reviewbot.review_server.adapter.in;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 import reviewbot.review_server.port.in.ReviewUseCase;
 
 @RestController
@@ -12,12 +17,12 @@ public class ReviewController {
     private final ReviewUseCase reviewUseCase;
 
     @PostMapping("/webhook")
-    public ResponseEntity<Void> githubWebhook(
+    public Mono<ResponseEntity<Void>> githubWebhook(
             @RequestHeader("X-GitHub-Event") String event,
             @RequestHeader("X-GitHub-Delivery") String deliveryId,
             @RequestHeader(value = "X-Hub-Signature-256", required = false) String sig256,
             @RequestBody byte[] rawBody) {
-        reviewUseCase.handle(event, deliveryId, sig256, rawBody);
-        return ResponseEntity.ok().build();
+        return reviewUseCase.handle(event, deliveryId, sig256, rawBody)
+                .thenReturn(ResponseEntity.accepted().build());
     }
 }
