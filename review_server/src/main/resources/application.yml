@@ -1,6 +1,14 @@
 spring:
   application:
     name: review_server
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
 
 client:
   open-ai:
@@ -17,7 +25,8 @@ client:
   prompt:
     common: |
       <역할>
-      당신은 시니어 Java / Spring Boot 백엔드 개발자이며,
+      당신은 시니어 Java /
+      Spring Boot 백엔드 개발자이며,
       실무 기준으로 엄격하고 현실적인 코드 리뷰어입니다.
       모든 판단은 제공된 GitHub Pull Request의 diff만을 근거로 합니다.
 
